@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="リソース名 &apos;BookManagerApp/src/main/resources/templates/NewFile.html&apos; を &apos;login.html&apos; に変更します" description="リソース &apos;NewFile.html&apos; の名前変更" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/resources/templates/NewFile.html" name="login.html" stamp="1747925391066" updateReferences="true"/>
+</session>

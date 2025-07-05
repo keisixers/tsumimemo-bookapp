@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>書籍詳細情報</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white p-8 font-sans">
+
+    <div class="flex justify-between items-start mb-8">
+        <img src="/logo.png" alt="ロゴ" class="h-20">
+        <a th:href="@{/books}" class="bg-green-400 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-500">戻る</a>
+    </div>
+
+    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="flex justify-center">
+            <img th:src="${book.thumbnailUrl}" alt="書影" class="w-72 rounded shadow">
+        </div>
+
+        <div class="space-y text-lg">
+            <div>
+                <span class="font-semibold">タイトル</span>
+                <span th:text="${book.title}">タイトル</span>
+            </div>
+            <div class="flex gap-12">
+                <div>
+                    <span class="font-semibold">著者</span>
+                    <span th:text="${book.authors}">著者</span>
+                </div>
+                <div>
+                    <span class="font-semibold">ページ数</span>
+                    <span th:text="${book.pageCount}">ページ数</span>
+                </div>
+            </div>
+            <div class="flex gap-12">
+                <div>
+                    <span class="font-semibold">発売日</span><br>
+                    <span th:text="${book.publishedDate}">発売日</span>
+                </div>
+                <div>
+                    <span class="font-semibold">言語</span><br>
+                    <span th:text="${book.language}">言語</span>
+                </div>
+            </div>
+            <div class="flex gap-12">
+                <div>
+                    <span class="font-semibold">出版社</span><br>
+                    <span th:text="${book.publisher}">出版社</span>
+                </div>
+                <div>
+                    <span class="font-semibold">形式</span><br>
+                    <span th:text="${book.printType}">形式</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto mt-8 text-lg leding-relaxed">
+        <h2 class="font-semibold mb-2">説明</h2>
+        <p th:text="${book.description}" class="whitespace-pre-wrap">
+            説明がここに入ります。
+        </p>
+    </div>
+
+    <div class="mt-12 flex justify-center">
+        <form th:action="@{/books/{id}/delete(id=${book.id})}" method="post"
+        onsubmit="return confirm('本当に削除しますか？')">
+        <button type="submit" class="bg-red-600 text-white font-bold px-8 py-2 rounded hover:bg-red-700">
+            削除
+        </button>
+        </form>
+    </div>
+</body>
+</html>

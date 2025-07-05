@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>書籍一覧</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white-py-10 px-4 font-sans">
+
+    <div class="max-w-6xl mx-auto mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-3 items-center gap-4">
+
+            <div class="flex justify-center sm:justify-start">
+                <img src="/logo.png" alt="つみメモ" class="h-20">
+            </div>
+
+            <div>
+                <form method="get" action="/books" class="flex gap-2 justify-center">
+                    <input type="text" name="keyword" placeholder="登録書籍を検索"
+                    class="w-full sm:w-64 px-3 py-2 rounded border border-gray-400 bg-white"
+                    th:value="${keyword}" />
+                    <button type="submit" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                        検索
+                    </button>
+                </form>
+            </div>
+
+            <div class="flex justify-center sm:justify-end">
+                <a href="/books/register" class="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700">
+                    本の新規登録
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 mg:grid-cols-5 gap-x-10 gap-y-12 justify-items-center">
+        <div th:each = "book:${books}" class="flex flex-col items-center text-center">
+             <a href="${book.id != null}" th:href="@{'/books/' + ${book.id}}">
+                 <img th:src="${book.thumbnailUrl}" alt="書影" class="h-64 w-auto shadow rounded mb-2" />
+             </a>
+             <img th:if="${book.id == null}" th:src = "${book.thumbnailUrl}" alt="書影" class="h-64 w-auto shadow rounded mb-2" />
+     
+             <p class="text-sm font-medium text-black whitespace-nowrap truncate w-32" th:text="${book.title}">タイトル</p>
+        </div>
+    </div>
+
+</body>
+</html>

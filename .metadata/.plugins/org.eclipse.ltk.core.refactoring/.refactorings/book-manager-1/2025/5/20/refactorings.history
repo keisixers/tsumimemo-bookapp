@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="リソース名 &apos;book-manager-1/src/main/java/com/example/bookmanager/BookManager1Application.java&apos; を &apos;BookManagerApplication.java&apos; に変更します" description="リソース &apos;BookManager1Application.java&apos; の名前変更" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/java/com/example/bookmanager/BookManager1Application.java" name="BookManagerApplication.java" stamp="1746965990793" updateReferences="true"/>
+</session>

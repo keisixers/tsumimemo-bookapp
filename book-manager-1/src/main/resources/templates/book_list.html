@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book　List</title>
+</head>
+<body>
+    <h1>書籍一覧</h1>
+    <table border="1">
+        <tr>
+            <th>タイトル</th>
+            <th>著者</th>
+            <th>サムネイル</th>
+        </tr>
+        <tr th:each="book : ${bookList}">
+            <td th:text="${book.title}"></td>
+            <td th:text="${book.authors}"></td>
+            <td><img th:src="${book.thumbnailUrl}" alt="thumbnailUrl" width="100"></td>
+        </tr>
+
+    </table>
+</body>
+</html>
