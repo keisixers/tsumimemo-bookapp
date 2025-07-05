@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>購入本の新規登録</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <div class="max-w-5xl mx-auto p-6">
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-center sm:justify-start">
+        <img src="/logo.png" alt="つみメモ" class="h-20">
+      </div>
+      <a href="/books" class="btn btn-success">戻る</a>
+    </div>
+
+    <p class="text-sm text-gray-500 mb-4">
+      ※ カメラのボタンを押すとスマホのカメラでISBNバーコードが読み取れます
+    </p>
+
+    <!-- 検索ボックス -->
+    <form method="get" th:action="@{/books/register}" id="searchForm" class="flex items-center gap-2 mb-6">
+      <input type="text" id="searchInput" name="keyword" placeholder="キーワードを入力"
+             class="input input-bordered w-full max-w-md border-gray-300" th:value="${keyword}">
+      <button type="button" onclick="startScanner()" class="btn btn-outline">📷</button>
+      <button type="submit" class="btn btn-primary">検索</button>
+    </form>
+
+    <!-- 検索結果 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" th:if="${books != null}">
+      <div th:each="book : ${books}" class="card bg-white shadow-md rounded-lg overflow-hidden">
+        <figure class="h-64 bg-gray-100">
+          <img th:if="${book.thumbnailUrl != null}" th:src="${book.thumbnailUrl}" alt="書影" class="object-contain h-full w-full" />
+          <div th:if="${book.thumbnailUrl == null}" class="flex items-center justify-center h-full text-gray-400">No Image</div>
+        </figure>
+        <div class="card-body p-4">
+          <h2 class="text-lg font-semibold mb-1" th:text="${book.title}">タイトル</h2>
+          <p class="text-sm text-gray-700 mb-1" th:text="'著者: ' + ${book.authors}">著者</p>
+          <p class="text-sm text-gray-600 mb-3" th:text="'発売日: ' + ${book.publishedDate}">発売日</p>
+          <form method="post" th:action="@{/books/register}">
+            <input type="hidden" name="title" th:value="${book.title}" />
+            <input type="hidden" name="authors" th:value="${book.authors}" />
+            <input type="hidden" name="publishedDate" th:value="${book.publishedDate}" />
+            <input type="hidden" name="thumbnailUrl" th:value="${book.thumbnailUrl}" />
+            <input type="hidden" name="isbn" th:value="${book.isbn}" />
+            <input type="hidden" name="pageCount" th:value="${book.pageCount}" />
+            <input type="hidden" name="printType" th:value="${book.printType}" />
+            <input type="hidden" name="language" th:value="${book.language}" />
+            <input type="hidden" name="publisher" th:value="${book.publisher}" />
+            <input type="hidden" name="description" th:value="${book.description}" />
+            <button type="submit" class="btn btn-primary w-full">登録</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR読み取り -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+	<script>
+	  let html5QrCode = null;
+
+	  function isValidISBN(code) {
+	    return /^(?:\d{9}[\dXx]|97[89]\d{10})$/.test(code);
+	  }
+
+	  async function startScanner() {
+	    try {
+	      if (html5QrCode) {
+	        await html5QrCode.stop();
+	        html5QrCode.clear();
+	      }
+	    } catch (e) {
+	      console.warn("開始前の停止に失敗", e);
+	    }
+
+	    document.getElementById("overlay").classList.remove("hidden");
+	    html5QrCode = new Html5Qrcode("reader");
+
+		const screenWidth = window.innerWidth;
+		const qrWidth = Math.min(window.innerWidth * 0.95, 400);  // 横幅を広めに
+		const qrHeight = qrWidth * 0.55;                          // 高さを抑えめに（理想は1.8:1）
+
+
+		html5QrCode.start(
+		  { facingMode: "environment" },
+		  {
+		    fps: 10,
+		    qrbox: { width: qrWidth, height: qrHeight }  // 点線範囲に近づける設定
+		  },
+		  (decodedText) => {
+		    if (isValidISBN(decodedText)) {
+		      document.getElementById("searchInput").value = decodedText;
+		      stopScanner();
+		      document.getElementById("searchForm").submit();
+		    }
+		  }
+		).catch(err => {
+		  console.error("カメラ起動エラー：", err);
+		});
+
+
+	  }
+
+	  function stopScanner() {
+	    if (html5QrCode) {
+	      html5QrCode.stop().then(() => {
+	        html5QrCode.clear();
+	        document.getElementById("overlay").classList.add("hidden");
+	        html5QrCode = null;
+	      }).catch(err => {
+	        console.warn("停止時のエラー:", err);
+	      });
+	    } else {
+	      document.getElementById("overlay").classList.add("hidden");
+	    }
+	  }
+	</script>
+
+
+
+	<!-- カメラUI -->
+	<div id="overlay" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex flex-col justify-center items-center p-4">
+	  <div class="bg-white rounded-lg shadow-lg w-full max-w-[95vw] flex flex-col items-center">
+
+	    <!-- カメラ映像 -->
+	    <div id="reader"
+	         class="w-full"
+	         style="height: auto; aspect-ratio: 3/4; max-width: 95vw; max-height: 65vh;"
+	    ></div>
+
+	    <!-- キャンセルボタン -->
+	    <button onclick="stopScanner()"
+	            class="w-full bg-red-500 text-white px-4 py-3 text-lg rounded hover:bg-red-600 mt-4">
+	      キャンセル
+	    </button>
+	  </div>
+	</div>
+
+
+  </div>
+</body>
+</html>
