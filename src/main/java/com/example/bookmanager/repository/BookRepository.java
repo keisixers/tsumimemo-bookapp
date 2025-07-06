@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.bookmanager.model.Book;
+import com.example.bookmanager.model.User;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
     
@@ -14,4 +15,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     
     // 登録前の重複チェック用（完全一致）
     Optional<Book> findByIsbn(String isbn);
+    
+    List<Book> findByUser(User user);
 }

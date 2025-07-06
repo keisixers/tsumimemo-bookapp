@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Book {
@@ -41,8 +43,13 @@ public class Book {
         this.publisher = publisher;
         this.description = description;
     }
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // Getter
+    public User getUser() { return user; }
     public Long getId() { return id; }
     public String getIsbn() { return isbn; }
     public String getTitle() { return title; }
@@ -56,6 +63,7 @@ public class Book {
     public String getDescription() { return description; }
 
     // Setter
+    public void setUser(User user) { this.user = user; }
     public void setId(Long id) { this.id = id; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
     public void setTitle(String title) { this.title = title; }

@@ -2,6 +2,8 @@ package com.example.bookmanager.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.bookmanager.model.Book;
+import com.example.bookmanager.model.User;
 import com.example.bookmanager.repository.BookRepository;
+import com.example.bookmanager.repository.UserRepository;
 import com.example.bookmanager.service.GoogleBooksService;
 
 @Controller
@@ -21,9 +25,12 @@ public class BookController {
 
     private final BookRepository bookRepository;
     private final GoogleBooksService googleBooksService;
+    private final UserRepository userRepository;
 
-    public BookController(BookRepository bookRepository, GoogleBooksService googleBooksService) {
+    public BookController(BookRepository bookRepository, UserRepository userRepository,
+    		GoogleBooksService googleBooksService) {
         this.bookRepository = bookRepository;
+        this.userRepository = userRepository;
         this.googleBooksService = googleBooksService;
     }
 
@@ -53,23 +60,41 @@ public class BookController {
             return "book_register";
         }
 
+        // ここからログインユーザーを取得して、Bookに紐づける処理
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username)
+        		.orElseThrow(() -> new RuntimeException("ログインユーザーが見つかりません"));
+
+        book.setUser(user); // 書籍にユーザー情報を紐づける
+
         bookRepository.save(book);
         return "redirect:/books";
     }
 
 
+
     // 書籍一覧表示
     @GetMapping
     public String listBooks(Model model, @RequestParam(required = false) String keyword) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username).orElseThrow();
+
         List<Book> books;
         if (keyword != null && !keyword.isEmpty()) {
-            books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorsContainingIgnoreCase(keyword, keyword);
+            books = bookRepository.findByUser(user).stream()
+                    .filter(book -> book.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+                                    book.getAuthors().toLowerCase().contains(keyword.toLowerCase()))
+                    .toList();
         } else {
-            books = bookRepository.findAll();
+            books = bookRepository.findByUser(user);
         }
+
         model.addAttribute("books", books);
         return "book_list";
     }
+
 
     // 書籍詳細表示
     @GetMapping("/{id}")
