@@ -25,11 +25,13 @@
       <!-- 📕 表紙＋削除ボタン -->
       <div class="flex flex-col items-center">
         <img th:src="${book.thumbnailUrl}" alt="表紙画像" class="w-48 md:w-56 rounded shadow mb-4">
-        <form th:action="@{'/books/delete/' + ${book.id}}" method="post">
-          <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded">
-            削除
-          </button>
-        </form>
+		<form th:action="@{'/books/' + ${book.id} + '/delete'}" method="post">
+		  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		  <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded">
+		    削除
+		  </button>
+		</form>
+
       </div>
 
       <!-- 📗 情報 -->
